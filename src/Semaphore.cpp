@@ -1,0 +1,19 @@
+// Created by Patryk on 20.03.2025.
+// Copyright 2025 Patryk patrykpietrzyk@protonmail.com
+// This file contains the implementation of the Semaphore class.
+
+#include "Semaphore.h"
+
+Semaphore::Semaphore(int count) : count(count) {}
+
+void Semaphore::wait() {
+    std::unique_lock lock(mtx);  // Lock the mutex
+    cv.wait(lock, [this] { return count > 0; });  // Wait until count is greater than zero
+    --count;  // Decrease the available resource count
+}
+
+void Semaphore::signal() {
+    std::unique_lock lock(mtx);  // Lock the mutex
+    ++count;  // Increase the available resource count
+    cv.notify_one();  // Notify one waiting thread
+}
