@@ -31,7 +31,8 @@ bool areAnyPhilosophersAlive(const std::vector<Philosopher> &philosophers) {
 // Function to display the status of all philosophers periodically
 void displayStatus(const std::vector<Philosopher> &philosophers) {
     while (areAnyPhilosophersAlive(philosophers)) {
-        system(CLEAR_SCREEN);  // Clear the console screen before displaying new status
+        // Clear the console screen before displaying new status
+        system(CLEAR_SCREEN);
         std::cout << "ID\tHUNGER\tSTATUS\t" << std::endl;
 
         // Iterate through each philosopher and display their status
@@ -41,7 +42,8 @@ void displayStatus(const std::vector<Philosopher> &philosophers) {
                       << philosopher.get_state() << std::endl;
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));  // Update status every second
+        // Update status every second
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
@@ -50,7 +52,8 @@ int main() {
     std::vector<std::unique_ptr<Semaphore>> forks;
     forks.reserve(NUM_PHILOSOPHERS);
     for (int i = 0; i < NUM_PHILOSOPHERS; ++i) {
-        forks.push_back(std::make_unique<Semaphore>(1));  // Each fork starts as available (value = 1)
+        // Each fork starts as available (value = 1)
+        forks.push_back(std::make_unique<Semaphore>(1));
     }
 
     // Create philosophers and assign them to forks
@@ -59,8 +62,9 @@ int main() {
     for (int i = 0; i < NUM_PHILOSOPHERS; ++i) {
         philosophers.emplace_back(
             i,  // Philosopher ID
-            *forks[i],  // Left fork (same index)
-            *forks[(i + 1) % NUM_PHILOSOPHERS],  // Right fork (next index, wraps around)
+            forks[i],  // Left fork (same index)
+            // Right fork (next index, wraps around)
+            forks[(i + 1) % NUM_PHILOSOPHERS],
             MAX_HUNGER);  // Initial hunger level
     }
 
@@ -77,10 +81,11 @@ int main() {
     std::thread displayThread(displayStatus, std::ref(philosophers));
     displayThread.detach();  // Detach it so it runs independently
 
-    // Wait for all philosopher threads to finish (which won't happen in an infinite simulation)
+    // Wait for all philosopher threads to finish (WON'T HAPPEN)
     for (auto& philosopher : philosophersThreads) {
         philosopher.join();
     }
 
-    return 0;  // Program should never reach this point since philosophers run indefinitely
+    // Should never reach this
+    return 0;
 }

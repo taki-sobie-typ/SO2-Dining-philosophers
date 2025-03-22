@@ -8,7 +8,8 @@ Semaphore::Semaphore(int count) : count(count) {}
 
 void Semaphore::wait() {
     std::unique_lock lock(mtx);  // Lock the mutex
-    cv.wait(lock, [this] { return count > 0; });  // Wait until count is greater than zero
+    // Wait until count is greater than zero
+    cv.wait(lock, [this] { return count > 0; });
     --count;  // Decrease the available resource count
 }
 

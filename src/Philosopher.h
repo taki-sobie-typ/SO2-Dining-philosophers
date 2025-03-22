@@ -16,16 +16,16 @@ class Philosopher {
     int hunger = 0;  // Hunger level of the philosopher
     bool isAlive = true;  // Flag indicating if the philosopher is active
     bool isEating = false;  // Flag indicating if the philosopher is eating
-    Semaphore &leftFork;  // Reference to the left fork (semaphore)
-    Semaphore &rightFork;  // Reference to the right fork (semaphore)
+    Semaphore *leftFork;  // Reference to the left fork (semaphore)
+    Semaphore *rightFork;  // Reference to the right fork (semaphore)
     int MAX_HUNGER;  // Maximum hunger level before starvation
     // Random number generation members
     std::mt19937 gen;
     std::uniform_int_distribution<> dist;
 
  public:
-    Philosopher(int id, Semaphore &leftFork,
-                Semaphore &rightFork, int MAX_HUNGER);  // Constructor
+    Philosopher(int id, const std::unique_ptr<Semaphore>& leftFork,
+                    const std::unique_ptr<Semaphore>& rightFork, int MAX_HUNGER);
 
     void operator()();  // Main loop for philosopher behavior
 
@@ -43,7 +43,8 @@ class Philosopher {
 
     void set_isAlive(bool isAlive);  // Sets the philosopher's alive status
 
-    std::string get_state() const;  // Returns the current state of the philosopher
+    // Returns the current state of the philosopher
+    std::string get_state() const;
 
     void increase_hunger();  // Increases hunger level
 

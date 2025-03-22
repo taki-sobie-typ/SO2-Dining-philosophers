@@ -16,14 +16,18 @@ class Semaphore {
     int count;  // The count of available resources
 
  public:
-    explicit Semaphore(int count = 1);  // Constructor initializes the semaphore count
+    // Constructor initializes the semaphore count
+    explicit Semaphore(int count = 1);
 
-    // Blokowanie kopiowania i przypisania
+    // Copy Blocking
     Semaphore(const Semaphore&) = delete;  // Prevent copying
     Semaphore& operator=(const Semaphore&) = delete;  // Prevent assignment
 
-    void wait();  // Decrements the semaphore count, blocking if necessary
-    void signal();  // Increments the semaphore count, waking up a waiting thread if any
+    // Decrements the semaphore count, blocking if necessary
+    void wait();
+
+    // Increments the semaphore count, waking up a waiting thread if any
+    void signal();
 };
 
 #endif  // SEMAPHORE_H
