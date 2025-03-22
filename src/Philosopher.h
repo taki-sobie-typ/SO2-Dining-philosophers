@@ -9,6 +9,7 @@
 #include "Semaphore.h"
 #include <string>
 #include <random>
+#include <memory>
 
 class Philosopher {
  private:
@@ -25,7 +26,7 @@ class Philosopher {
 
  public:
     Philosopher(int id, const std::unique_ptr<Semaphore>& leftFork,
-                    const std::unique_ptr<Semaphore>& rightFork, int MAX_HUNGER);
+        const std::unique_ptr<Semaphore>& rightFork, int MAX_HUNGER);
 
     void operator()();  // Main loop for philosopher behavior
 

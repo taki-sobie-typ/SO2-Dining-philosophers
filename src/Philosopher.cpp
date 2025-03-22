@@ -7,6 +7,7 @@
 #include <thread>
 #include <string>
 #include <random>
+#include <memory>
 
 Philosopher::Philosopher(
     int id,
