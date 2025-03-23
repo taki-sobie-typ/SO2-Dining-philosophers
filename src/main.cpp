@@ -4,6 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <algorithm>
 #include <memory>  // For smart pointers
 #include "Semaphore.h"
 #include "Philosopher.h"
@@ -15,7 +16,6 @@
     #define CLEAR_SCREEN "clear"  // Linux/Unix command
 #endif
 
-constexpr int NUM_PHILOSOPHERS = 10;  // Number of philosophers
 constexpr int MAX_HUNGER = 10;  // Maximum hunger level a philosopher can have
 
 bool areAnyPhilosophersAlive(const std::vector<Philosopher> &philosophers) {
@@ -47,7 +47,22 @@ void displayStatus(const std::vector<Philosopher> &philosophers) {
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    int NUM_PHILOSOPHERS = 5;  // Default value
+
+    // Check if a command-line argument for number of philosophers was passed
+    if (argc > 1) {
+        try {
+            // Convert the argument to an integer
+            NUM_PHILOSOPHERS = std::stoi(argv[1]);
+        } catch (const std::invalid_argument&) {
+            std::cerr << "Invalid argument (Using default)\n";
+        }
+    }
+
+    // Ensure there is at least one philosopher
+    NUM_PHILOSOPHERS = std::max(NUM_PHILOSOPHERS, 1);
+
     // Create semaphores representing forks (one for each philosopher)
     std::vector<std::unique_ptr<Semaphore>> forks;
     forks.reserve(NUM_PHILOSOPHERS);
@@ -79,7 +94,7 @@ int main() {
 
     // Start a separate thread to display the status of all philosophers
     std::thread displayThread(displayStatus, std::ref(philosophers));
-    displayThread.detach();  // Detach it so it runs independently
+    displayThread.join();  // Detach it so it runs independently
 
     // Wait for all philosopher threads to finish (WON'T HAPPEN)
     for (auto& philosopher : philosophersThreads) {
