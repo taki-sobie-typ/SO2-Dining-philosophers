@@ -25,9 +25,7 @@ Philosopher::Philosopher(
 void Philosopher::operator()() {
     while (isAlive) {
         think();  // Thinks before eating
-        increase_hunger();  // Hunger increases over time
         eat();  // Tries to eat
-        decrease_hunger();  // Eating decreases hunger
     }
 }
 
@@ -39,22 +37,39 @@ void Philosopher::think() {
 
     // Thinking time
     std::this_thread::sleep_for(std::chrono::seconds(thinkingTime));
+
+    increase_hunger();  // Hunger increases over time
 }
 
 void Philosopher::eat() {
-    leftFork->wait();  // Acquire left fork
-    rightFork->wait();  // Acquire right fork
+    // Only when hungry can eat
+    if (hunger <= 1) {
+        return;
+    }
+
+    // Try to acquire the left fork
+    leftFork->wait();  // Block until left fork is available
+
+    // Try to acquire the right fork
+    if (!rightFork->try_wait()) {
+        // Release left fork if right fork is unavailable
+        leftFork->signal();
+        return;  // Return to thinking if unable to acquire both forks
+    }
 
     isEating = true;  // Philosopher starts eating
 
     // Generate a random number between 1 and 3
-    const int thinkingTime = dist(gen);
+    const int eatingTime = dist(gen);
 
-    // Thinking time
-    std::this_thread::sleep_for(std::chrono::seconds(thinkingTime));
+    // Eating time
+    std::this_thread::sleep_for(std::chrono::seconds(eatingTime));
 
-    leftFork->signal();  // Release left fork
-    rightFork->signal();  // Release right fork
+    decrease_hunger();  // Eating decreases hunger
+
+    // Release both forks after eating
+    leftFork->signal();
+    rightFork->signal();
 }
 
 // Returns current hunger level
@@ -92,6 +107,6 @@ void Philosopher::increase_hunger() {
 
 void Philosopher::decrease_hunger() {
     if (hunger > 0) {
-        hunger--;  // Reduce hunger after eating
+        hunger = 0;  // Reduce hunger after eating
     }
 }

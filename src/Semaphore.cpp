@@ -13,6 +13,15 @@ void Semaphore::wait() {
     --count;  // Decrease the available resource count
 }
 
+bool Semaphore::try_wait() {
+    std::unique_lock lock(mtx);
+    if (count > 0) {
+        --count;
+        return true;
+    }
+    return false;
+}
+
 void Semaphore::signal() {
     std::unique_lock lock(mtx);  // Lock the mutex
     ++count;  // Increase the available resource count

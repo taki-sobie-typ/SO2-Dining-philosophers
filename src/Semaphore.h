@@ -24,6 +24,9 @@ class Semaphore {
     Semaphore& operator=(const Semaphore&) = delete;  // Prevent assignment
 
     // Decrements the semaphore count, blocking if necessary
+    bool try_wait();
+
+    // Decrements the semaphore count, blocking if necessary
     void wait();
 
     // Increments the semaphore count, waking up a waiting thread if any
